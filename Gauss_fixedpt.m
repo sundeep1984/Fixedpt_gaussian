@@ -39,8 +39,7 @@ end
 segments = [repmat(1:4:56,1,4) 53 53 53 53];
 
 for i=1:n
-    %urng=floor(rand(1)*2^num_bits); % generating a uniform random number in [0,1] and scaling it up to represent it as a 64 bitvector
-    %urng_bin=de2bi(urng,num_bits);
+    
     urng_bin=ceil(rand(1,num_bits)-0.5);
     lead_zero_inp=urng_bin(1:61);
     zerolocs = find(lead_zero_inp);% this is the leading zero detector which is used to select the segment and coefficients
@@ -57,7 +56,8 @@ for i=1:n
     end
     
     offset = urng_bin(62:63);
-    offsetdec = bi2de(offset);
+    %offsetdec = bi2de(offset);
+    offsetdec = sum(2.^(find(fliplr(offset))-1));
     
     coeff=segments(zerolocs(1))+offsetdec; % picking out the segment based on the leading zero location
     
@@ -141,7 +141,8 @@ for i=1:n
     end
     
     if signbit==1
-        ftemp=-(bi2de(fliplr(stage3out))/2^12);
+        %ftemp=-(bi2de(fliplr(stage3out))/2^12);
+        ftemp = -(sum(2.^(find(fliplr(stage3out))-1))/2^12);
         if(ftemp>0)
             ftemp=-ftemp;
         end
@@ -151,7 +152,8 @@ for i=1:n
         
     else
         finalout = stage3out;
-        ftemp = (bi2de(fliplr(stage3out))/2^12);
+        %ftemp = (bi2de(fliplr(stage3out))/2^12);
+        ftemp = (sum(2.^(find(fliplr(stage3out))-1))/2^12);
     end
 
     if write_testvec==1
