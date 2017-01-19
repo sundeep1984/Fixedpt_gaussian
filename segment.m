@@ -34,10 +34,7 @@ e_max = ulp; %
 %temp variable assignments
 coeffvec=[];% should store c0, c1,c2 as well as the x1 and x2 bounds
 u=[];
-%a=[0.5 0.8853];
-%b=1;
 
-%for i=1:2
 x1 = a;
 x2 = b;
 m = 1;
@@ -102,34 +99,6 @@ while ~done
     
 end
 done
-%u(end)=[];
-%coeffvec(end,:)=[];
-%ulp = 1/2^10;
-%e_max = ulp; % 
-
-%end
-%l=length(u);
-
-%div=max(61-l,0);
-
-% if div>0
-% interval = (u(end)-u(end-1))/(div+1);
-% 
-% 
-% 
-% int=u(end-1):interval:u(end);
-% u(end)=[];
-% coeffvec(end,:)=[];
-% 
-% for i=1:div
-%     [error,c2,c1,c0]=minimax(f,int(i),int(i+1),m);
-%     error
-%     coeffvec = [coeffvec; [c0, c1, c2] ];
-%     u = [u; int(i+1)];
-%     m=m+1;
-% end
-% 
-% end
 
 s = size(coeffvec);
 
@@ -138,7 +107,7 @@ u'
 c0binvec = zeros(s(1),21);
 c1binvec = zeros(s(1),18);
 c2binvec = zeros(s(1),18);
-%cvec=dec2bin(zeros(s(1),s(2)),18);
+
 cvec=[];
 cnt=1;
 % in the code below, n1,n2 are selected based on the range of values of the
@@ -154,8 +123,13 @@ for i=1:s(1)
             else 
                 temp = coeffvec(i,j);
             end
-            c2binvec(cnt,:) = fliplr(de2bi(round(temp*2^n2),n1+n2));% round it out and represent it in 21 bits
-            
+            %c2binvec(cnt,:) = fliplr(de2bi(round(temp*2^n2),n1+n2));% round it out and represent it in 21 bits
+                        
+            temp2 = diff([0 mod(round(temp*2^n2),2.^(1:n1+n2))]);
+            vtemp=zeros(1,n1+n2);
+            vtemp(log2(temp2(find(temp2)))+1)=1;
+            c2binvec(cnt,:) = fliplr(vtemp);
+
         elseif j==2
             n1=1;% encoding the coeff as Q1.17
             n2=17;
@@ -164,8 +138,13 @@ for i=1:s(1)
             else 
                 temp = coeffvec(i,j);
             end
-            c1binvec(cnt,:) = fliplr(de2bi(round(temp*2^n2),n1+n2));
-            
+            %c1binvec(cnt,:) = fliplr(de2bi(round(temp*2^n2),n1+n2));
+                        
+            temp2 = diff([0 mod(round(temp*2^n2),2.^(1:n1+n2))]);
+            vtemp=zeros(1,n1+n2);
+            vtemp(log2(temp2(find(temp2)))+1)=1;
+            c1binvec(cnt,:) = fliplr(vtemp);
+
         elseif j==3
             n1=2;% encoding the coeff as Q2.19
             n2=19;
@@ -174,8 +153,13 @@ for i=1:s(1)
             else 
                 temp = coeffvec(i,j);
             end
-            c0binvec(cnt,:) = fliplr(de2bi(round(temp*2^n2),n1+n2));
-            
+            %c0binvec(cnt,:) = fliplr(de2bi(round(temp*2^n2),n1+n2));
+                        
+            temp2 = diff([0 mod(round(temp*2^n2),2.^(1:n1+n2))]);
+            vtemp=zeros(1,n1+n2);
+            vtemp(log2(temp2(find(temp2)))+1)=1;
+            c0binvec(cnt,:) = fliplr(vtemp);
+
         end
                 
     end
